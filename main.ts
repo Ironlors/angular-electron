@@ -89,13 +89,19 @@ const menuTemplate = [
           mainWindow.webContents.send("saveFile");
         },
       },
+      {
+        label: "Save As",
+        click: () => {
+          mainWindow.webContents.send("saveAs");
+        },
+      },
     ],
   },
   // { role: 'viewMenu' }
   {
     label: "View",
     submenu: [
-      { role: "toggledevtools", enabled: false },
+      { role: "toggledevtools", enabled: true },
       { type: "separator" },
       { role: "resetzoom" },
       { role: "zoomin" },

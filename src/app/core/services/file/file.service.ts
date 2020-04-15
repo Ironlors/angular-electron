@@ -11,8 +11,8 @@ import * as BpmnJS from "bpmn-js/dist/bpmn-modeler.development.js";
 export class FileService {
   constructor(private _http: HttpClient, private router: Router) {}
   currentFile = {
-    path: "",
-    content: "",
+    path: null,
+    content: null,
   };
 
   getCurrentPath() {
@@ -48,13 +48,9 @@ export class FileService {
     });
 
     const file = files[0];
-    if (file) {
-      this.setCurrentPath(file);
-      this.setCurrentContent(this.readFile(file));
-      this.router.navigateByUrl("/edit");
-    } else {
-      alert("No file was selected");
-    }
+    this.setCurrentPath(file);
+    this.setCurrentContent(this.readFile(file));
+    this.router.navigateByUrl("/edit");
   }
 
   readFile(filePath: string): string {
@@ -63,13 +59,16 @@ export class FileService {
 
   createDiagram() {
     this.setCurrentContent(defaultDiagram);
-    this.setCurrentPath("");
+    this.currentFile.path = null;
     this.router.navigateByUrl("/edit");
   }
 
   saveDiagram(viewer: BpmnJS) {
-    viewer.saveXML({ format: true }, (err, xml) => {
-      const savePath = remote.dialog.showSaveDialogSync({
+    let savePath = "";
+    if (this.currentFile.path !== null) {
+      savePath = this.getCurrentPath();
+    } else {
+      savePath = remote.dialog.showSaveDialogSync({
         title: "Save Project",
         filters: [
           {
@@ -83,7 +82,9 @@ export class FileService {
           { name: "All files", extensions: ["*"] },
         ],
       });
-
+    }
+    viewer.saveXML({ format: true }, (err, xml) => {
+      this.setCurrentPath(savePath);
       const data = writeFileSync(savePath, xml);
     });
   }
