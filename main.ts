@@ -1,83 +1,122 @@
-import { app, BrowserWindow, screen } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
+const { app, BrowserWindow, Menu } = require("electron");
+const url = require("url");
+const path = require("path");
 
-let win: BrowserWindow = null;
-const args = process.argv.slice(1),
-    serve = args.some(val => val === '--serve');
+let mainWindow;
+let ipcm = require("electron").ipcMain;
 
-function createWindow(): BrowserWindow {
+const isMac = process.platform === "darwin";
 
-  const electronScreen = screen;
-  const size = electronScreen.getPrimaryDisplay().workAreaSize;
-
-  // Create the browser window.
-  win = new BrowserWindow({
-    x: 0,
-    y: 0,
-    width: size.width,
-    height: size.height,
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    show: false,
     webPreferences: {
       nodeIntegration: true,
-      allowRunningInsecureContent: (serve) ? true : false,
     },
+    icon: __dirname + "/logo.png",
+  });
+  // mainWindow.setIcon("./logo.png");
+
+  mainWindow.maximize();
+  mainWindow.show();
+
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "/dist/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
+
+  mainWindow.on("closed", function () {
+    mainWindow = null;
   });
 
-  if (serve) {
-    require('electron-reload')(__dirname, {
-      electron: require(`${__dirname}/node_modules/electron`)
-    });
-    win.loadURL('http://localhost:4200');
-  } else {
-    win.loadURL(url.format({
-      pathname: path.join(__dirname, 'dist/index.html'),
-      protocol: 'file:',
-      slashes: true
-    }));
-  }
-
-  if (serve) {
-    win.webContents.openDevTools();
-  }
-
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store window
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null;
-  });
-
-  return win;
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
 
-try {
+app.on("ready", createWindow);
 
-  app.allowRendererProcessReuse = true;
+app.on("window-all-closed", function () {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
 
-  // This method will be called when Electron has finished
-  // initialization and is ready to create browser windows.
-  // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+app.on("activated", function () {
+  if (mainWindow === null) {
+    createWindow();
+  }
+});
 
-  // Quit when all windows are closed.
-  app.on('window-all-closed', () => {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
-  });
-
-  app.on('activate', () => {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (win === null) {
-      createWindow();
-    }
-  });
-
-} catch (e) {
-  // Catch Error
-  // throw e;
-}
+// TODO: extract to seperate file
+const menuTemplate = [
+  // { role: 'appMenu' }
+  ...(isMac
+    ? [
+        {
+          label: app.name,
+          submenu: [
+            { role: "about" },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            { role: "hide" },
+            { role: "hideothers" },
+            { role: "unhide" },
+            { type: "separator" },
+            { role: "quit" },
+          ],
+        },
+      ]
+    : []),
+  // { role: 'fileMenu' }
+  {
+    label: "File",
+    submenu: [
+      {
+        label: "Open File",
+        accelerator: "CmdOrCtrl+O",
+        click: () => {
+          mainWindow.webContents.send("openFile");
+        },
+      },
+      {
+        label: "Save File",
+        accelerator: "CmdOrCtrl+S",
+        click: () => {
+          mainWindow.webContents.send("saveFile");
+        },
+      },
+    ],
+  },
+  // { role: 'viewMenu' }
+  {
+    label: "View",
+    submenu: [
+      { role: "toggledevtools", enabled: true },
+      { type: "separator" },
+      { role: "resetzoom" },
+      { role: "zoomin" },
+      { role: "zoomout" },
+      { type: "separator" },
+      { role: "togglefullscreen" },
+    ],
+  },
+  // { role: 'windowMenu' }
+  {
+    label: "Window",
+    submenu: [
+      { role: "minimize" },
+      ...(isMac
+        ? [
+            { type: "separator" },
+            { role: "front" },
+            { type: "separator" },
+            { role: "window" },
+          ]
+        : [{ role: "close" }]),
+    ],
+  },
+];

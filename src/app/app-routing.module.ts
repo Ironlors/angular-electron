@@ -4,15 +4,12 @@ import { LandingComponent } from "./components/landing/landing.component";
 import { BpmnEditorComponent } from "./components/bpmn-editor/bpmn-editor.component";
 
 const routes: Routes = [
-  { path: "editor", component: BpmnEditorComponent },
-  {
-    path: "**",
-    component: LandingComponent,
-  },
+  { path: "edit", component: BpmnEditorComponent },
+  { path: "**", component: LandingComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

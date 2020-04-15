@@ -15,10 +15,10 @@ export class LandingComponent implements OnInit {
   openDialog() {}
 
   openFile = () => {
-    //this.fileService.openFile();
+    this.fileService.openFile();
   };
 
   createDiagram = () => {
-    //this.fileService.createDiagram();
+    this.fileService.createDiagram();
   };
 }
