@@ -14,7 +14,15 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 
 import { AppComponent } from "./app.component";
-import { LandingComponent } from './components/landing/landing.component';
+import { LandingComponent } from "./components/landing/landing.component";
+
+import { MatCardModule } from "@angular/material/card";
+import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatButtonModule } from "@angular/material/button";
+import { BpmnEditorComponent } from './components/bpmn-editor/bpmn-editor.component';
+import { ApplicationHeaderComponent } from './components/application-header/application-header.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -22,7 +30,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 @NgModule({
-  declarations: [AppComponent, LandingComponent],
+  declarations: [AppComponent, LandingComponent, BpmnEditorComponent, ApplicationHeaderComponent],
   imports: [
     BrowserModule,
     FormsModule,
@@ -36,6 +44,12 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
         deps: [HttpClient],
       },
     }),
+    MatToolbarModule,
+    MatButtonModule,
+    MatCardModule,
+    MatListModule,
+    HttpClientModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
