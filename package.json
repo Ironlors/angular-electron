@@ -1,11 +1,11 @@
 {
-  "name": "angular-electron",
-  "version": "7.0.3",
-  "description": "Angular 9 with Electron (Typescript + SASS + Hot Reload)",
-  "homepage": "https://github.com/maximegris/angular-electron",
+  "name": "open-bpmn",
+  "version": "1.0.0-a",
+  "description": "Open Source BPMN Editor",
+  "homepage": "kaykleinvogel.com",
   "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
+    "name": "Kay Kleinvogel",
+    "email": "kaykleinvogel@googlemail.com"
   },
   "keywords": [
     "angular",

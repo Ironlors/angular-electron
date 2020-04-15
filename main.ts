@@ -95,7 +95,7 @@ const menuTemplate = [
   {
     label: "View",
     submenu: [
-      { role: "toggledevtools", enabled: true },
+      { role: "toggledevtools", enabled: false },
       { type: "separator" },
       { role: "resetzoom" },
       { role: "zoomin" },
